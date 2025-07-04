@@ -1,0 +1,50 @@
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+
+import { ConfirmationProvider } from "@/context/ConfirmationContext";
+import { LanguageProvider } from "@/context/LanguageContext";
+
+const geistSans = Geist({
+    variable: "--font-geist-sans",
+    subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+    variable: "--font-geist-mono",
+    subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+    title: "Central Circle Complain", // TODO: Update this title
+    description: "Complaint and replacement form for Dexcom glucose meters.", // TODO: Update this description
+};
+
+export default function RootLayout({
+    children,
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
+    return (
+        <html lang="en">
+            <body
+                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            >
+                <LanguageProvider>
+                    <ConfirmationProvider>{children}</ConfirmationProvider>
+                </LanguageProvider>
+                {process.env.NODE_ENV === 'development' && (
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html: `
+                            document.addEventListener("DOMContentLoaded", function () {
+                                document.body.classList.remove("vsc-initialized");
+                            });
+                            `,
+                        }}
+                    />
+                )}
+            </body>
+        </html>
+    );
+}
