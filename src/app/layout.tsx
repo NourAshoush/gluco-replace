@@ -33,17 +33,6 @@ export default function RootLayout({
                 <LanguageProvider>
                     <ConfirmationProvider>{children}</ConfirmationProvider>
                 </LanguageProvider>
-                {process.env.NODE_ENV === 'development' && (
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: `
-                            document.addEventListener("DOMContentLoaded", function () {
-                                document.body.classList.remove("vsc-initialized");
-                            });
-                            `,
-                        }}
-                    />
-                )}
             </body>
         </html>
     );

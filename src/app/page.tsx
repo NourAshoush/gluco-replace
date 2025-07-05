@@ -4,7 +4,11 @@ import { supabase } from "@/lib/supabaseClient";
 import { useConfirmation } from "@/context/ConfirmationContext";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
-import DashboardHeader from "@/components/DashboardHeader";
+import MainHeader from "@/components/MainHeader";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { ar } from "date-fns/locale";
+import { enGB } from "date-fns/locale";
 
 interface Question {
     name: string;
@@ -26,6 +30,9 @@ export default function Home() {
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
+        registerLocale("ar", ar);
+        registerLocale("en-GB", enGB);
+
         const fetchQuestions = async () => {
             setLoadingQuestions(true);
             const { data, error } = await supabase
@@ -33,7 +40,8 @@ export default function Home() {
                 .select("*")
                 .order("order", { ascending: true });
 
-            if (error) { // TODO: Handle error
+            if (error) {
+                // TODO: Handle error
                 console.error("Error fetching questions:", error);
             } else {
                 setQuestions(data as Question[]);
@@ -55,7 +63,8 @@ export default function Home() {
             .select("code")
             .single();
 
-        if (error) { // TODO: Handle error
+        if (error) {
+            // TODO: Handle error
             console.error("Error submitting response:", error);
         } else {
             setCode(data.code);
@@ -81,7 +90,8 @@ export default function Home() {
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
                     </div>
                 )}
-                <DashboardHeader />
+
+                <MainHeader />
 
                 <form
                     onSubmit={handleSubmit}
@@ -100,11 +110,15 @@ export default function Home() {
                         <div key={q.name} className="w-full">
                             <label
                                 className={`block mb-2 text-xl font-medium ${
-                                    language === "ar" ? "text-right" : "text-left"
+                                    language === "ar"
+                                        ? "text-right"
+                                        : "text-left"
                                 }`}
                                 htmlFor={q.name}
                             >
-                                {language === "en" ? q.question_en : q.question_ar}
+                                {language === "en"
+                                    ? q.question_en
+                                    : q.question_ar}
                                 {q.required && (
                                     <span className="text-red-500"> *</span>
                                 )}
@@ -117,7 +131,9 @@ export default function Home() {
                                     rows={4}
                                     required={q.required}
                                     placeholder={
-                                        language === "en" ? "Your answer" : "إجابتك"
+                                        language === "en"
+                                            ? "Your answer"
+                                            : "إجابتك"
                                     }
                                     className={`w-full p-3 border rounded bg-white text-base resize-none ${
                                         language === "ar"
@@ -155,23 +171,83 @@ export default function Home() {
                                     <option value="" disabled hidden>
                                         {language === "en"
                                             ? "Select..."
-                                            : "اختر..."}
+                                            : "اختر"}
                                     </option>
                                     {q.options.map((opt, idx) => (
                                         <option key={idx} value={opt.en}>
-                                            {language === "en" ? opt.en : opt.ar}
+                                            {language === "en"
+                                                ? opt.en
+                                                : opt.ar}
                                         </option>
                                     ))}
                                 </select>
+                            ) : q.type === "date" ? (
+                                <div className="w-full p-3 border rounded bg-white text-base text-left">
+                                    <DatePicker
+                                        id={q.name}
+                                        selected={
+                                            formData[q.name]
+                                                ? new Date(formData[q.name])
+                                                : null
+                                        }
+                                        onChange={(date) =>
+                                            setFormData({
+                                                ...formData,
+                                                [q.name]: date
+                                                    ?.toISOString()
+                                                    .split("T")[0],
+                                            })
+                                        }
+                                        dateFormat="dd/MM/yyyy"
+                                        locale={
+                                            language === "ar" ? "ar" : "en-GB"
+                                        }
+                                        placeholderText={
+                                            language === "ar"
+                                                ? "اختر تاريخًا"
+                                                : "Select a date"
+                                        }
+                                        disabled={submitting}
+                                        calendarStartDay={0}
+                                        className="w-full"
+                                    />
+                                </div>
                             ) : (
                                 <input
                                     id={q.name}
                                     name={q.name}
                                     type={q.type}
+                                    {...(q.type === "number"
+                                        ? {
+                                              min: "0",
+                                              step: "any",
+                                              pattern: "[0-9]*[.,]?[0-9]*",
+                                              inputMode: "decimal",
+                                              onKeyDown: (e) => {
+                                                  if (
+                                                      [
+                                                          "e",
+                                                          "E",
+                                                          "+",
+                                                          "-",
+                                                      ].includes(e.key) ||
+                                                      (e.key === "." &&
+                                                          (e.currentTarget.value.includes(
+                                                              "."
+                                                          ) ||
+                                                              !e.currentTarget
+                                                                  .value))
+                                                  ) {
+                                                      e.preventDefault();
+                                                  }
+                                              },
+                                          }
+                                        : {})}
                                     required={q.required}
-                                    max={q.type === "date" ? today : undefined}
                                     placeholder={
-                                        language === "en" ? "Your answer" : "إجابتك"
+                                        language === "en"
+                                            ? "Your answer"
+                                            : "إجابتك"
                                     }
                                     className={`w-full p-3 border rounded bg-white text-base ${
                                         language === "ar"
@@ -193,7 +269,9 @@ export default function Home() {
 
                     <button
                         type="submit"
-                        className={`w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed${submitting ? " opacity-50" : ""}`}
+                        className={`w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed${
+                            submitting ? " opacity-50" : ""
+                        }`}
                         disabled={submitting}
                     >
                         {language === "en" ? "Submit" : "إرسال"}
