@@ -54,12 +54,35 @@ export default function Home() {
 
     const today = new Date().toISOString().split("T")[0];
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const form = e.currentTarget;
+
+        if (!form.checkValidity()) {
+            const firstInvalid = form.querySelector(":invalid") as HTMLElement;
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                });
+                firstInvalid.focus();
+            }
+            return;
+        }
+
         setSubmitting(true);
+
+        const cleanedData = Object.fromEntries(
+            Object.entries(formData).map(([key, value]) => [
+                key,
+                typeof value === "string" ? value.trim() : value,
+            ])
+        );
+
         const { data, error } = await supabase
             .from("responses")
-            .insert([{ response_data: formData }])
+            .insert([{ response_data: cleanedData }])
             .select("code")
             .single();
 
@@ -77,7 +100,7 @@ export default function Home() {
     if (loadingQuestions) {
         return (
             <div className="flex justify-center items-center h-screen bg-white">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green"></div>
             </div>
         );
     }
@@ -209,6 +232,7 @@ export default function Home() {
                                         }
                                         disabled={submitting}
                                         calendarStartDay={0}
+                                        maxDate={new Date()}
                                         className="w-full"
                                     />
                                 </div>
@@ -269,7 +293,7 @@ export default function Home() {
 
                     <button
                         type="submit"
-                        className={`w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed${
+                        className={`btn-green w-full py-2 px-4 text-white rounded disabled:cursor-not-allowed${
                             submitting ? " opacity-50" : ""
                         }`}
                         disabled={submitting}

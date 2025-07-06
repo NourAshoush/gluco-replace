@@ -1,19 +1,79 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #ffffff;
+    --foreground: #171717;
+    --green: #38af17;
+    --green-hover: #2e8f12;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+input,
+textarea,
+select {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 1px var(--green);
+}
+
+.text-green {
+    color: var(--green);
+}
+
+button .text-green:hover,
+button.text-green:hover {
+    color: var(--green-hover);
+}
+
+.btn-green {
+    background-color: var(--green);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-green:hover {
+    background-color: var(--green-hover);
+}
+
+.btn-red {
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-red:hover {
+    background-color: #fef2f2;
+}
+
+.btn-black {
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-black:hover {
+    background-color: #f3f4f6;
+}
+
+.border-green {
+    border-color: var(--green);
 }

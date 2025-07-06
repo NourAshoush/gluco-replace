@@ -41,7 +41,7 @@ export default function ConfirmationPage() {
                     ? "Your replacement code is:"
                     : "!رمز الاستبدال الخاص بك هو"}
             </p>
-            <span className="ml-2 text-3xl font-mono font-semibold text-blue-700">
+            <span className="ml-2 text-3xl font-mono font-semibold" style={{ color: "green" }}>
                 {code}
             </span>
             <div className="mt-6">

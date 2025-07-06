@@ -16,7 +16,7 @@ export default function LogoutButton() {
     return (
         <button
             onClick={handleLogout}
-            className="text-sm px-4 py-2 border border-red-300 rounded text-red-600 hover:bg-red-50 cursor-pointer"
+            className="text-sm px-4 py-2 border rounded btn-red"
         >
             {language === "ar" ? "تسجيل الخروج" : "Logout"}
         </button>

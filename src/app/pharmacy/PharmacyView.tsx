@@ -133,7 +133,7 @@ export default function PharmacyView() {
 
                     {loading ? (
                         <div className="flex justify-center items-center h-60">
-                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green"></div>
                         </div>
                     ) : (
                         <>
@@ -164,7 +164,7 @@ export default function PharmacyView() {
                                 <button
                                     type="submit"
                                     disabled={code.length !== 7}
-                                    className={`bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors duration-200 ${
+                                    className={`btn-green text-white px-4 py-2 rounded ${
                                         code.length !== 7
                                             ? "opacity-50 cursor-not-allowed"
                                             : ""
@@ -183,9 +183,11 @@ export default function PharmacyView() {
                             <button
                                 type="button"
                                 onClick={() => setShowScanner(true)}
-                                className="mt-6 flex justify-center items-center w-full"
+                                className="mt-6 flex justify-center items-center w-full cursor-pointer"
                             >
-                                <MdQrCodeScanner className="text-7xl text-blue-600 hover:text-blue-700 cursor-pointer transition-all duration-200" />
+                                <MdQrCodeScanner
+                                    className="text-7xl transition-all duration-200 text-green"
+                                />
                             </button>
 
                             {showScanner && (

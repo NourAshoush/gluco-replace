@@ -46,6 +46,11 @@ export default function Login() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!username.trim() || !password.trim()) {
+            setError("Please enter both username and password.");
+            return;
+        }
+
         setLoading(true);
 
         const email = `${username}${EMAIL_SUFFIX}`;
@@ -92,14 +97,14 @@ export default function Login() {
         <div className="relative min-h-screen flex items-center justify-center bg-white text-black">
             {loading && (
                 <div className="absolute inset-0 bg-white bg-opacity-60 z-50 flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green"></div>
                 </div>
             )}
             <form
                 onSubmit={handleLogin}
-                className="w-full max-w-sm p-6 space-y-4 border rounded shadow"
+                className="w-full max-w-sm p-6 space-y-4 bg-white shadow-xl rounded-lg"
             >
-                <h2 className="text-2xl font-bold mb-4">Login</h2>
+                <h2 className="text-2xl font-bold mb-4 text-green text-center">Login</h2>
                 {error && <p className="text-red-600">{error}</p>}
                 <input
                     type="text"
@@ -121,7 +126,7 @@ export default function Login() {
                 />
                 <button
                     type="submit"
-                    className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+                    className="w-full text-white py-2 px-4 rounded btn-green"
                 >
                     Log In
                 </button>
