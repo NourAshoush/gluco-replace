@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { FiMenu, FiHome, FiClipboard, FiAlertCircle, FiUsers, FiHash } from "react-icons/fi";
@@ -28,7 +29,7 @@ export default function SideBar() {
 
             {/* Mobile dropdown menu */}
             {open && (
-                <div className="md:hidden absolute top-16 right-4 w-56 bg-white rounded-md shadow-lg z-50">
+                <div className="md:hidden fixed top-16 right-4 w-56 bg-white rounded-md shadow-lg z-50">
                     <div className="flex flex-col divide-y divide-gray-200">
                         {links.map(({ href, label, icon }) => (
                             <Link
@@ -54,9 +55,19 @@ export default function SideBar() {
 
             {/* Sidebar (desktop only) */}
             <div
-                className="hidden md:block fixed inset-0 md:relative md:inset-auto w-full md:w-64 bg-white text-black min-h-screen p-4 z-50 shadow-md"
+                className="hidden md:block fixed top-0 left-0 h-screen w-64 bg-white text-black p-4 z-50 border-r border-gray-200 rounded-tr-xl rounded-br-xl shadow-md"
             >
                 <div className="flex flex-col justify-center items-center h-full space-y-4">
+                    <div className="mb-6">
+                        <Image
+                            src="/dexcom_logo.png"
+                            alt="Dexcom Logo"
+                            width={120}
+                            height={40}
+                            priority
+                            draggable={false}
+                        />
+                    </div>
                     {links.map(({ href, label, icon }) => (
                         <Link
                             key={href}

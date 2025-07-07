@@ -148,30 +148,48 @@ export default function Home() {
                             </label>
 
                             {q.type === "textarea" ? (
-                                <textarea
-                                    id={q.name}
-                                    name={q.name}
-                                    rows={4}
-                                    required={q.required}
-                                    placeholder={
-                                        language === "en"
-                                            ? "Your answer"
-                                            : "إجابتك"
-                                    }
-                                    className={`w-full p-3 border rounded bg-white text-base resize-none ${
-                                        language === "ar"
-                                            ? "text-right"
-                                            : "text-left"
-                                    } ${submitting ? "opacity-50" : ""}`}
-                                    value={formData[q.name] || ""}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            [q.name]: e.target.value,
-                                        })
-                                    }
-                                    disabled={submitting}
-                                />
+                                <div className="relative">
+                                    <textarea
+                                        id={q.name}
+                                        name={q.name}
+                                        rows={4}
+                                        required={q.required}
+                                        placeholder={
+                                            language === "en"
+                                                ? "Your answer"
+                                                : "إجابتك"
+                                        }
+                                        className={`w-full p-3 border rounded bg-white text-base resize-none pr-12 select-none ${
+                                            language === "ar"
+                                                ? "text-right"
+                                                : "text-left"
+                                        } ${submitting ? "opacity-50" : ""}`}
+                                        value={formData[q.name] || ""}
+                                        maxLength={500}
+                                        onInput={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                [q.name]: e.currentTarget.value,
+                                            })
+                                        }
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                [q.name]: e.target.value,
+                                            })
+                                        }
+                                        disabled={submitting}
+                                    />
+                                    <span
+                                        className={`absolute bottom-2 text-xs text-gray-400 pointer-events-none select-none ${
+                                            language === "ar"
+                                                ? "left-2"
+                                                : "right-2"
+                                        }`}
+                                    >
+                                        {formData[q.name]?.length || 0}/500
+                                    </span>
+                                </div>
                             ) : q.type === "select" && q.options ? (
                                 <select
                                     id={q.name}
@@ -293,7 +311,7 @@ export default function Home() {
 
                     <button
                         type="submit"
-                        className={`btn-green w-full py-2 px-4 text-white rounded disabled:cursor-not-allowed${
+                        className={`btn-green w-full py-2 px-4 rounded disabled:cursor-not-allowed${
                             submitting ? " opacity-50" : ""
                         }`}
                         disabled={submitting}

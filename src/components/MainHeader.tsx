@@ -13,7 +13,7 @@ export default function MainHeader() {
     return (
         <>
             {isHomePage && (
-                <header className="w-full px-6 py-4 bg-white shadow-md">
+                <header className="w-full px-6 py-4 bg-white shadow-md rounded-b-md border border-gray-200">
                     <div className="max-w-6xl mx-auto flex flex-row flex-wrap justify-between items-center gap-2">
                         <div className="text-base sm:text-lg truncate max-w-[200px] sm:max-w-none font-medium">
                             <Image
@@ -33,7 +33,7 @@ export default function MainHeader() {
             )}
 
             {isPharmacyDashboard && (
-                <header className="w-full px-6 py-4 bg-white shadow-md">
+                <header className="w-full px-6 py-4 bg-white shadow-md rounded-b-md border border-gray-200">
                     <div className="max-w-6xl mx-auto flex flex-row justify-between items-center">
                         <LanguageToggle />
                         <LogoutButton />

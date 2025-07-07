@@ -45,6 +45,7 @@ button.text-green:hover {
 
 .btn-green {
     background-color: var(--green);
+    color: white;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
