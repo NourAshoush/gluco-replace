@@ -1,26 +1,29 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import EditQuestionModal from "@/components/EditQuestionModal";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/utils/supabase/client";
 
 export default function FormManagerPage() {
     const [questions, setQuestions] = useState<any[]>([]);
     const [selectedQuestion, setSelectedQuestion] = useState<any | null>(null);
+    const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
-        const fetchQuestions = async () => {
-            const supabase = createClientComponentClient();
+        const fetchData = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
             const { data } = await supabase.from("questions").select("*").order("order");
             setQuestions(data || []);
+            setUser(user);
         };
-        fetchQuestions();
+        fetchData();
     }, []);
 
     if (selectedQuestion) {
         return (
             <EditQuestionModal
                 question={selectedQuestion}
+                user={user}
                 onClose={() => setSelectedQuestion(null)}
             />
         );

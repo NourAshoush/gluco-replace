@@ -1,5 +1,8 @@
 "use client";
+import Footer from "@/components/Footer";
 import React, { useEffect, useState } from "react";
+import SerialHelpModal from "@/components/SerialHelpModal";
+import { FiHelpCircle } from "react-icons/fi";
 import { supabase } from "@/lib/supabaseClient";
 import { useConfirmation } from "@/context/ConfirmationContext";
 import { useRouter } from "next/navigation";
@@ -28,6 +31,7 @@ export default function Home() {
     const router = useRouter();
     const [loadingQuestions, setLoadingQuestions] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const [showHelpModal, setShowHelpModal] = useState(false);
 
     useEffect(() => {
         registerLocale("ar", ar);
@@ -79,6 +83,9 @@ export default function Home() {
                 typeof value === "string" ? value.trim() : value,
             ])
         );
+        if (cleanedData.sensor_serial_number) {
+            cleanedData.sensor_serial_number = "(21)" + cleanedData.sensor_serial_number;
+        }
 
         const { data, error } = await supabase
             .from("responses")
@@ -144,6 +151,15 @@ export default function Home() {
                                     : q.question_ar}
                                 {q.required && (
                                     <span className="text-red-500"> *</span>
+                                )}
+                                {q.name === "sensor_serial_number" && (
+                                    <span
+                                        className="inline-flex items-center cursor-pointer text-gray-500 hover:text-black ml-2"
+                                        onClick={() => setShowHelpModal(true)}
+                                        aria-label="Help"
+                                    >
+                                        <FiHelpCircle className="w-5 h-5" />
+                                    </span>
                                 )}
                             </label>
 
@@ -254,6 +270,33 @@ export default function Home() {
                                         className="w-full"
                                     />
                                 </div>
+                            ) : q.name === "sensor_serial_number" ? (
+                                <div className="flex items-center border rounded bg-white">
+                                    <span className="px-3 select-none">(21)</span>
+                                    <input
+                                        id={q.name}
+                                        name={q.name}
+                                        type="text"
+                                        pattern="\d{12}"
+                                        inputMode="numeric"
+                                        maxLength={12}
+                                        required={q.required}
+                                        placeholder={
+                                            language === "en" ? "Enter 12 digits" : "أدخل 12 رقمًا"
+                                        }
+                                        className={`flex-1 p-3 text-base rounded-r ${
+                                            language === "ar" ? "text-right" : "text-left"
+                                        } ${submitting ? "opacity-50" : ""}`}
+                                        value={formData[q.name] || ""}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                [q.name]: e.target.value,
+                                            })
+                                        }
+                                        disabled={submitting}
+                                    />
+                                </div>
                             ) : (
                                 <input
                                     id={q.name}
@@ -304,6 +347,7 @@ export default function Home() {
                                         })
                                     }
                                     disabled={submitting}
+                                    maxLength={100}
                                 />
                             )}
                         </div>
@@ -318,8 +362,10 @@ export default function Home() {
                     >
                         {language === "en" ? "Submit" : "إرسال"}
                     </button>
+                    <SerialHelpModal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} />
                 </form>
             </div>
+            <Footer />
         </>
     );
 }
