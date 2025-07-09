@@ -2,6 +2,7 @@
 import { useConfirmation } from "@/context/ConfirmationContext";
 import { QRCodeCanvas } from "qrcode.react";
 import { useLanguage } from "@/context/LanguageContext";
+import Link from "next/link";
 
 export default function ConfirmationPage() {
     const { code } = useConfirmation();
@@ -13,12 +14,12 @@ export default function ConfirmationPage() {
                 <p>
                     {language === "en"
                         ? "Invalid or missing confirmation code."
-                        : "رمز التأكيد غير صالح أو مفقود."}
+                        : "رمز التأكيد غير صالح أو مفقود"}
                 </p>
                 <p>
                     {language === "en"
                         ? "Please return to the form and submit again."
-                        : "يرجى العودة إلى النموذج وإعادة الإرسال."}
+                        : "يرجى العودة إلى النموذج وإعادة الإرسال"}
                 </p>
                 <a href="/" className="mt-4 text-blue-500 hover:underline">
                     {language === "en"
@@ -50,8 +51,17 @@ export default function ConfirmationPage() {
             <p className="mt-4 text-lg text-gray-600">
                 {language === "en"
                     ? "Please take a screenshot of this page or write down your code for future reference."
-                    : ".يرجى أخذ لقطة شاشة لهذه الصفحة أو حفظ رمز الخاص بك للرجوع إليه لاحقًا"}
+                    : "يرجى أخذ لقطة شاشة لهذه الصفحة أو حفظ رمز الخاص بك للرجوع إليه لاحقًا"}
             </p>
+            <div className="max-w-2xl mx-auto px-6 mt-6">
+                <Link href="/pharmacies">
+                    <button className="btn-black inline-block px-4 py-2 text-sm rounded">
+                        {language === "en"
+                            ? "Find Nearest Pharmacies"
+                            : "عرض أقرب الصيدليات"}
+                    </button>
+                </Link>
+            </div>
         </div>
     );
 }

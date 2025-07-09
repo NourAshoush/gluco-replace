@@ -62,20 +62,28 @@ const CodeResultOverlay: React.FC<CodeResultOverlayProps> = ({
 
             <p className="text-lg mb-6">{message}</p>
 
-            <button
-                onClick={onClose}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded cursor-pointer transition-colors duration-200"
-            >
-                {language === "ar" ? "إغلاق" : "Close"}
-            </button>
-
-            {type === "success" && onResolve && (
+            {type === "success" && onResolve ? (
+                <div className="flex flex-col gap-2">
+                    <button
+                        onClick={handleResolveClick}
+                        disabled={isResolving}
+                        className="btn-green px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                    >
+                        {language === "ar" ? "تم إصدار الاستبدال" : "Replacement Issued"}
+                    </button>
+                    <button
+                        onClick={onClose}
+                        className="btn-red px-4 py-2 rounded transition-colors duration-200"
+                    >
+                        {language === "ar" ? "غير قادر على الإصدار" : "Unable to Issue Replacement"}
+                    </button>
+                </div>
+            ) : (
                 <button
-                    onClick={handleResolveClick}
-                    disabled={isResolving}
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={onClose}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded cursor-pointer transition-colors duration-200"
                 >
-                    {language === "ar" ? "تم إصدار الاستبدال" : "Replacement Issued"}
+                    {language === "ar" ? "إغلاق" : "Close"}
                 </button>
             )}
         </div>

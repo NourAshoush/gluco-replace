@@ -12,6 +12,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ar } from "date-fns/locale";
 import { enGB } from "date-fns/locale";
+import Link from "next/link";
 
 interface Question {
     name: string;
@@ -84,7 +85,8 @@ export default function Home() {
             ])
         );
         if (cleanedData.sensor_serial_number) {
-            cleanedData.sensor_serial_number = "(21)" + cleanedData.sensor_serial_number;
+            cleanedData.sensor_serial_number =
+                "(21)" + cleanedData.sensor_serial_number;
         }
 
         const { data, error } = await supabase
@@ -116,12 +118,21 @@ export default function Home() {
         <>
             <div className="relative min-h-screen bg-white text-black overflow-y-auto">
                 {submitting && (
-                    <div className="absolute inset-0 bg-white bg-opacity-60 z-50 flex items-center justify-center">
+                    <div className="fixed inset-0 bg-white bg-opacity-60 z-50 flex items-center justify-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
                     </div>
                 )}
 
                 <MainHeader />
+                <div className="max-w-2xl mx-auto px-6 mt-4">
+                    <Link href="/pharmacies">
+                        <button className="btn-black inline-block px-4 py-2 text-sm rounded">
+                            {language === "en"
+                                ? "Find Nearest Pharmacies"
+                                : "عرض أقرب الصيدليات"}
+                        </button>
+                    </Link>
+                </div>
 
                 <form
                     onSubmit={handleSubmit}
@@ -272,7 +283,9 @@ export default function Home() {
                                 </div>
                             ) : q.name === "sensor_serial_number" ? (
                                 <div className="flex items-center border rounded bg-white">
-                                    <span className="px-3 select-none">(21)</span>
+                                    <span className="px-3 select-none">
+                                        (21)
+                                    </span>
                                     <input
                                         id={q.name}
                                         name={q.name}
@@ -282,10 +295,14 @@ export default function Home() {
                                         maxLength={12}
                                         required={q.required}
                                         placeholder={
-                                            language === "en" ? "Enter 12 digits" : "أدخل 12 رقمًا"
+                                            language === "en"
+                                                ? "Enter 12 digits"
+                                                : "أدخل 12 رقمًا"
                                         }
                                         className={`flex-1 p-3 text-base rounded-r ${
-                                            language === "ar" ? "text-right" : "text-left"
+                                            language === "ar"
+                                                ? "text-right"
+                                                : "text-left"
                                         } ${submitting ? "opacity-50" : ""}`}
                                         value={formData[q.name] || ""}
                                         onChange={(e) =>
@@ -362,7 +379,10 @@ export default function Home() {
                     >
                         {language === "en" ? "Submit" : "إرسال"}
                     </button>
-                    <SerialHelpModal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} />
+                    <SerialHelpModal
+                        isOpen={showHelpModal}
+                        onClose={() => setShowHelpModal(false)}
+                    />
                 </form>
             </div>
             <Footer />
