@@ -34,6 +34,19 @@ select:focus {
     box-shadow: 0 0 0 1px var(--green);
 }
 
+input[type="checkbox"] {
+    margin-right: 0.5rem;
+    accent-color: var(--green);
+    --webkit-accent-color: var(--green);
+    cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+    accent-color: var(--green);
+    --webkit-accent-color: var(--green);
+    color: white; /* Ensures the tick is white when checked */
+}
+
 .text-green {
     color: var(--green);
 }
@@ -78,3 +91,4 @@ button.text-green:hover {
 .border-green {
     border-color: var(--green);
 }
+

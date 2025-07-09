@@ -175,7 +175,6 @@ export default function EditQuestionModal({
                                 type="checkbox"
                                 checked={required}
                                 onChange={(e) => setRequired(e.target.checked)}
-                                className="mr-2 accent-green-400"
                             />
                             Required
                         </label>
