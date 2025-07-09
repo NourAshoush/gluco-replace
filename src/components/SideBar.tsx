@@ -11,7 +11,7 @@ const links = [
     { href: "/admin/form-manager", label: "Form Manager", icon: <FiClipboard className="text-green mr-3 text-xl" /> },
     { href: "/admin/complaints", label: "Complaints", icon: <FiAlertCircle className="text-green mr-3 text-xl" /> },
     { href: "/admin/pharmacies", label: "Pharmacies", icon: <FiUsers className="text-green mr-3 text-xl" /> },
-    { href: "/admin/serial-numbers", label: "Serial Numbers", icon: <FiHash className="text-green mr-3 text-xl" /> },
+    // { href: "/admin/serial-numbers", label: "Serial Numbers", icon: <FiHash className="text-green mr-3 text-xl" /> },
 ];
 
 export default function SideBar() {

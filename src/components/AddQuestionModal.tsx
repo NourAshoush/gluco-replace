@@ -83,7 +83,13 @@ const AddQuestionModal: React.FC<AddQuestionModalProps> = ({
                     <input
                         type="text"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => {
+                            const transformed = e.target.value.replace(
+                                /[\s-]+/g,
+                                "_"
+                            );
+                            setName(transformed);
+                        }}
                         className="w-full mt-1 p-2 border border-gray-300 rounded"
                     />
                 </div>

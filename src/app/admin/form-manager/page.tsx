@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
+import { FaSpinner } from "react-icons/fa";
 import EditQuestionModal from "@/components/EditQuestionModal";
 import AddQuestionModal from "@/components/AddQuestionModal";
 import ReorderQuestionsModal from "@/components/ReorderQuestionsModal";
-import { createClient } from "@/utils/supabase/client";
 
 export default function FormManagerPage() {
     const [questions, setQuestions] = useState<any[]>([]);
@@ -12,6 +13,7 @@ export default function FormManagerPage() {
     const [reordering, setReordering] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,14 +27,23 @@ export default function FormManagerPage() {
                 .order("order");
             setQuestions(data || []);
             setUser(user);
+            setFetching(false);
         };
         fetchData();
     }, []);
 
+    if (fetching) {
+        return (
+            <div className="flex justify-center items-center min-h-[400px]">
+                <FaSpinner className="animate-spin text-green text-3xl" />
+            </div>
+        );
+    }
+
     if (loading) {
         return (
             <div className="absolute inset-0 bg-white bg-opacity-60 z-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green"></div>
+                <FaSpinner className="animate-spin text-green text-3xl" />
             </div>
         );
     }

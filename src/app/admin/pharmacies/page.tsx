@@ -1,8 +1,7 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { requireAdminSession } from "@/utils/auth";
+import { FaSpinner } from "react-icons/fa";
 import EditPharmacyModal from "@/components/EditPharmacyModal";
 import CreatePharmacyModal from "@/components/CreatePharmacyModal";
 
@@ -10,12 +9,14 @@ export default function PharmaciesPage() {
     const [pharmacies, setPharmacies] = useState<any[]>([]);
     const [selectedPharmacy, setSelectedPharmacy] = useState<any | null>(null);
     const [creatingPharmacy, setCreatingPharmacy] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             const supabase = createClient();
             const { data } = await supabase.from("pharmacies").select("*");
             setPharmacies(data || []);
+            setLoading(false);
         };
         fetchData();
     }, []);
@@ -27,53 +28,60 @@ export default function PharmaciesPage() {
                     <h1 className="text-2xl font-bold mb-6 text-green">
                         Pharmacies
                     </h1>
-                    <div className="space-y-4">
-                        {pharmacies.map((pharmacy) => (
-                            <div
-                                key={pharmacy.id}
-                                className="flex items-center justify-between border border-gray-200 rounded p-4 bg-white shadow-sm"
-                            >
-                                <div className="flex flex-col flex-1">
-                                    <div className="text-lg font-semibold text-gray-800">
-                                        {pharmacy.pharmacy_name}
+                    {loading ? (
+                        <div className="flex justify-center py-20">
+                            <FaSpinner className="animate-spin text-green text-3xl" />
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {pharmacies.map((pharmacy) => (
+                                <div
+                                    key={pharmacy.id}
+                                    className="flex items-center justify-between border border-gray-200 rounded p-4 bg-white shadow-sm"
+                                >
+                                    <div className="flex flex-col flex-1">
+                                        <div className="text-lg font-semibold text-gray-800">
+                                            {pharmacy.pharmacy_name}
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                            {pharmacy.governorate} •{" "}
+                                            {pharmacy.area}
+                                        </div>
                                     </div>
-                                    <div className="text-sm text-gray-500">
-                                        {pharmacy.governorate} • {pharmacy.area}
-                                    </div>
-                                </div>
 
-                                <div className="flex items-center gap-3">
-                                    {pharmacy.open_24_hours && (
-                                        <span className="text-xs bg-green bg-opacity-20 text-green px-2 py-1 rounded-full font-medium">
-                                            24 Hours
-                                        </span>
-                                    )}
-                                    <button
-                                        className="p-2 rounded-full hover:bg-gray-200 transition cursor-pointer"
-                                        title="Edit Pharmacy"
-                                        onClick={() =>
-                                            setSelectedPharmacy(pharmacy)
-                                        }
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5 text-gray-600"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
+                                    <div className="flex items-center gap-3">
+                                        {pharmacy.open_24_hours && (
+                                            <span className="text-xs bg-green bg-opacity-20 text-green px-2 py-1 rounded-full font-medium">
+                                                24 Hours
+                                            </span>
+                                        )}
+                                        <button
+                                            className="p-2 rounded-full hover:bg-gray-200 transition cursor-pointer"
+                                            title="Edit Pharmacy"
+                                            onClick={() =>
+                                                setSelectedPharmacy(pharmacy)
+                                            }
                                         >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M9 5l7 7-7 7"
-                                            />
-                                        </svg>
-                                    </button>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-5 w-5 text-gray-600"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M9 5l7 7-7 7"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
             {selectedPharmacy && (
