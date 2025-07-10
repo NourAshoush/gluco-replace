@@ -21,7 +21,7 @@ const CreatePharmacyModal: React.FC<CreatePharmacyModalProps> = ({
     const [address, setAddress] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const EMAIL_SUFFIX = "@test.com"; // TODO: Replace with your actual email suffix
+    const EMAIL_SUFFIX = "@patientsupportdexcom.com"; // TODO: Replace with your actual email suffix
 
     const supabase = createClient();
     const isFormValid =

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
 
-const EMAIL_SUFFIX = "@test.com"; // TODO: Replace with actual suffix
+const EMAIL_SUFFIX = "@patientsupportdexcom.com"; // TODO: Replace with actual suffix
 
 export default function Login() {
     const [username, setUsername] = useState("");
