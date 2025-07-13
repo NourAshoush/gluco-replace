@@ -3,14 +3,37 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { FiMenu, FiHome, FiClipboard, FiAlertCircle, FiUsers, FiHash } from "react-icons/fi";
+import {
+    FiMenu,
+    FiHome,
+    FiClipboard,
+    FiAlertCircle,
+    FiUsers,
+    FiHash,
+} from "react-icons/fi";
 import LogoutButton from "./LogoutButton";
 
 const links = [
-    { href: "/admin", label: "Dashboard", icon: <FiHome className="text-green mr-3 text-xl" /> },
-    { href: "/admin/form-manager", label: "Form Manager", icon: <FiClipboard className="text-green mr-3 text-xl" /> },
-    { href: "/admin/complaints", label: "Complaints", icon: <FiAlertCircle className="text-green mr-3 text-xl" /> },
-    { href: "/admin/pharmacies", label: "Pharmacies", icon: <FiUsers className="text-green mr-3 text-xl" /> },
+    {
+        href: "/admin",
+        label: "Dashboard",
+        icon: <FiHome className="text-green mr-3 text-xl" />,
+    },
+    {
+        href: "/admin/form-manager",
+        label: "Form Manager",
+        icon: <FiClipboard className="text-green mr-3 text-xl" />,
+    },
+    {
+        href: "/admin/complaints",
+        label: "Complaints",
+        icon: <FiAlertCircle className="text-green mr-3 text-xl" />,
+    },
+    {
+        href: "/admin/pharmacies",
+        label: "Pharmacies",
+        icon: <FiUsers className="text-green mr-3 text-xl" />,
+    },
     // { href: "/admin/serial-numbers", label: "Serial Numbers", icon: <FiHash className="text-green mr-3 text-xl" /> },
 ];
 
@@ -22,7 +45,10 @@ export default function SideBar() {
         <>
             {/* Mobile menu toggle button */}
             <div className="md:hidden fixed top-4 right-4 z-50">
-                <button onClick={() => setOpen(!open)} className="bg-white shadow-md p-2 rounded">
+                <button
+                    onClick={() => setOpen(!open)}
+                    className="bg-white shadow-md p-2 rounded"
+                >
                     <FiMenu className="text-2xl" />
                 </button>
             </div>
@@ -43,7 +69,9 @@ export default function SideBar() {
                                 onClick={() => setOpen(false)}
                             >
                                 {icon}
-                                <span className="font-medium text-base">{label}</span>
+                                <span className="font-medium text-base">
+                                    {label}
+                                </span>
                             </Link>
                         ))}
                         <div className="px-4 py-3">
@@ -54,13 +82,11 @@ export default function SideBar() {
             )}
 
             {/* Sidebar (desktop only) */}
-            <div
-                className="hidden md:block fixed top-0 left-0 h-screen w-64 bg-white text-black p-4 z-50 border-r border-gray-200 rounded-tr-xl rounded-br-xl shadow-md"
-            >
+            <div className="hidden md:block fixed top-0 left-0 h-screen w-64 bg-white text-black p-4 z-50 border-r border-gray-200 rounded-tr-xl rounded-br-xl shadow-md">
                 <div className="flex flex-col justify-center items-center h-full space-y-4">
                     <div className="mb-6">
                         <Image
-                            src="/dexcom_logo.png"
+                            src="/dexcom_logo_green.png"
                             alt="Dexcom Logo"
                             width={120}
                             height={40}
@@ -79,7 +105,9 @@ export default function SideBar() {
                             }`}
                         >
                             {icon}
-                            <span className="font-medium text-base">{label}</span>
+                            <span className="font-medium text-base">
+                                {label}
+                            </span>
                         </Link>
                     ))}
                     <div className="mt-4 w-full flex justify-center">

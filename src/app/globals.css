@@ -3,7 +3,7 @@
 :root {
     --background: #ffffff;
     --foreground: #171717;
-    --green: #38af17;
+    --green: #38ab0d;
     --green-hover: #2e8f12;
 }
 
@@ -56,6 +56,10 @@ button.text-green:hover {
     color: var(--green-hover);
 }
 
+.bg-green {
+    background-color: var(--green);
+}
+
 .btn-green {
     background-color: var(--green);
     color: white;
@@ -79,6 +83,7 @@ button.text-green:hover {
 }
 
 .btn-black {
+    background-color: rgba(243, 244, 246, 0.8);
     border: 1px solid #d1d5db;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -91,4 +96,3 @@ button.text-green:hover {
 .border-green {
     border-color: var(--green);
 }
-

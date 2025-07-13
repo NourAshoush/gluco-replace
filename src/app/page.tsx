@@ -115,8 +115,8 @@ export default function Home() {
     }
 
     return (
-        <>
-            <div className="relative min-h-screen bg-white text-black overflow-y-auto">
+        <div className="flex flex-col min-h-screen bg-white text-black">
+            <div className="flex-grow relative overflow-y-auto">
                 {submitting && (
                     <div className="fixed inset-0 bg-white bg-opacity-60 z-50 flex items-center justify-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
@@ -126,7 +126,7 @@ export default function Home() {
                 <MainHeader />
                 <div className="max-w-2xl mx-auto px-6 mt-4">
                     <Link href="/pharmacies">
-                        <button className="btn-black inline-block px-4 py-2 text-sm rounded">
+                        <button className="btn-green w-full py-2 text-sm rounded">
                             {language === "en"
                                 ? "Find Nearest Pharmacies"
                                 : "عرض أقرب الصيدليات"}
@@ -386,6 +386,6 @@ export default function Home() {
                 </form>
             </div>
             <Footer />
-        </>
+        </div>
     );
 }
