@@ -51,7 +51,7 @@ export default function PharmaciesPage() {
 
                                     <div className="flex items-center gap-3">
                                         {pharmacy.open_24_hours && (
-                                            <span className="text-xs bg-green bg-opacity-20 text-green px-2 py-1 rounded-full font-medium">
+                                            <span className="text-xs bg-green bg-opacity-20 text-white px-2 py-1 rounded-full font-medium">
                                                 24 Hours
                                             </span>
                                         )}

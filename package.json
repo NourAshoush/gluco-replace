@@ -19,6 +19,7 @@
     "@zxing/browser": "^0.1.5",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "json2csv": "^6.0.0-alpha.2",
     "next": "15.3.4",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
