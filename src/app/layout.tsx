@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Central Circle Complain", // TODO: Update this title
-    description: "Complaint and replacement form for Dexcom glucose meters.", // TODO: Update this description
+    title: "Dexcom Patient Support",
+    description: "Dexcom Glucose Meter Support System.",
 };
 
 export default function RootLayout({

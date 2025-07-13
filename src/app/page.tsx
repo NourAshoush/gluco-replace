@@ -14,6 +14,55 @@ import { ar } from "date-fns/locale";
 import { enGB } from "date-fns/locale";
 import Link from "next/link";
 
+const formSections: {
+    [sectionKey: string]: {
+        questions: string[];
+        header: { en: string; ar: string };
+    };
+} = {
+    patientInformation: {
+        questions: ["patient_name", "birth_date"],
+        header: {
+            en: "Patient Information",
+            ar: "معلومات المريض",
+        },
+    },
+    contactDetails: {
+        questions: ["mobile", "email", "number", "address", "governorate"],
+        header: {
+            en: "Contact Details",
+            ar: "معلومات التواصل",
+        },
+    },
+    incidentDetails: {
+        questions: ["issue_date", "complaint_details"],
+        header: {
+            en: "Incident Details",
+            ar: "تفاصيل الواقعة",
+        },
+    },
+    readingDetails: {
+        questions: ["blood_reading", "dexcom_reading"],
+        header: {
+            en: "Blood Glucose & Dexcom Readings",
+            ar: "قراءات الجلوكوز وديكسكوم",
+        },
+    },
+    sensorInformation: {
+        questions: [
+            "display_device",
+            "sensor_insertion_date",
+            "sensor_insertion_site",
+            "sensor_lot_number",
+            "sensor_serial_number",
+        ],
+        header: {
+            en: "Sensor Information",
+            ar: "معلومات الحساس",
+        },
+    },
+};
+
 interface Question {
     name: string;
     type: string;
@@ -147,228 +196,290 @@ export default function Home() {
                         <span className="text-red-500">*</span>
                         {language === "en" ? " are required" : " مطلوبة"}
                     </p>
-                    {questions.map((q) => (
-                        <div key={q.name} className="w-full">
-                            <label
-                                className={`block mb-2 text-xl font-medium ${
-                                    language === "ar"
-                                        ? "text-right"
-                                        : "text-left"
-                                }`}
-                                htmlFor={q.name}
-                            >
-                                {language === "en"
-                                    ? q.question_en
-                                    : q.question_ar}
-                                {q.required && (
-                                    <span className="text-red-500"> *</span>
-                                )}
-                                {q.name === "sensor_serial_number" && (
-                                    <span
-                                        className="inline-flex items-center cursor-pointer text-gray-500 hover:text-black ml-2"
-                                        onClick={() => setShowHelpModal(true)}
-                                        aria-label="Help"
-                                    >
-                                        <FiHelpCircle className="w-5 h-5" />
-                                    </span>
-                                )}
-                            </label>
+                    {(() => {
+                        const renderedSections = new Set<string>();
 
-                            {q.type === "textarea" ? (
-                                <div className="relative">
-                                    <textarea
-                                        id={q.name}
-                                        name={q.name}
-                                        rows={4}
-                                        required={q.required}
-                                        placeholder={
-                                            language === "en"
-                                                ? "Your answer"
-                                                : "إجابتك"
-                                        }
-                                        className={`w-full p-3 border rounded bg-white text-base resize-none pr-12 select-none ${
+                        return questions.map((q) => {
+                            let sectionToRender: string | null = null;
+                            let sectionHeader = "";
+
+                            for (const [
+                                key,
+                                { questions: sectionQuestions, header },
+                            ] of Object.entries(formSections)) {
+                                if (
+                                    sectionQuestions.includes(q.name) &&
+                                    !renderedSections.has(key)
+                                ) {
+                                    sectionToRender = key;
+                                    sectionHeader = header[language];
+                                    renderedSections.add(key);
+                                    break;
+                                }
+                            }
+
+                            return (
+                                <div key={q.name} className="w-full">
+                                    {sectionToRender && (
+                                        <h2 className="text-2xl text-green font-bold mb-4 mt-8">
+                                            {sectionHeader}
+                                        </h2>
+                                    )}
+                                    <label
+                                        className={`block mb-2 text-xl font-medium ${
                                             language === "ar"
                                                 ? "text-right"
                                                 : "text-left"
-                                        } ${submitting ? "opacity-50" : ""}`}
-                                        value={formData[q.name] || ""}
-                                        maxLength={500}
-                                        onInput={(e) =>
-                                            setFormData({
-                                                ...formData,
-                                                [q.name]: e.currentTarget.value,
-                                            })
-                                        }
-                                        onChange={(e) =>
-                                            setFormData({
-                                                ...formData,
-                                                [q.name]: e.target.value,
-                                            })
-                                        }
-                                        disabled={submitting}
-                                    />
-                                    <span
-                                        className={`absolute bottom-2 text-xs text-gray-400 pointer-events-none select-none ${
-                                            language === "ar"
-                                                ? "left-2"
-                                                : "right-2"
                                         }`}
+                                        htmlFor={q.name}
                                     >
-                                        {formData[q.name]?.length || 0}/500
-                                    </span>
-                                </div>
-                            ) : q.type === "select" && q.options ? (
-                                <select
-                                    id={q.name}
-                                    name={q.name}
-                                    required={q.required}
-                                    className={`w-full p-3 border rounded bg-white text-base ${
-                                        language === "ar"
-                                            ? "text-right"
-                                            : "text-left"
-                                    } ${submitting ? "opacity-50" : ""}`}
-                                    value={formData[q.name] || ""}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            [q.name]: e.target.value,
-                                        })
-                                    }
-                                    disabled={submitting}
-                                >
-                                    <option value="" disabled hidden>
                                         {language === "en"
-                                            ? "Select..."
-                                            : "اختر"}
-                                    </option>
-                                    {q.options.map((opt, idx) => (
-                                        <option key={idx} value={opt.en}>
-                                            {language === "en"
-                                                ? opt.en
-                                                : opt.ar}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : q.type === "date" ? (
-                                <div className="w-full p-3 border rounded bg-white text-base text-left">
-                                    <DatePicker
-                                        id={q.name}
-                                        selected={
-                                            formData[q.name]
-                                                ? new Date(formData[q.name])
-                                                : null
-                                        }
-                                        onChange={(date) =>
-                                            setFormData({
-                                                ...formData,
-                                                [q.name]: date
-                                                    ?.toISOString()
-                                                    .split("T")[0],
-                                            })
-                                        }
-                                        dateFormat="dd/MM/yyyy"
-                                        locale={
-                                            language === "ar" ? "ar" : "en-GB"
-                                        }
-                                        placeholderText={
-                                            language === "ar"
-                                                ? "اختر تاريخًا"
-                                                : "Select a date"
-                                        }
-                                        disabled={submitting}
-                                        calendarStartDay={0}
-                                        maxDate={new Date()}
-                                        className="w-full"
-                                    />
-                                </div>
-                            ) : q.name === "sensor_serial_number" ? (
-                                <div className="flex items-center border rounded bg-white">
-                                    <span className="px-3 select-none">
-                                        (21)
-                                    </span>
-                                    <input
-                                        id={q.name}
-                                        name={q.name}
-                                        type="text"
-                                        pattern="\d{12}"
-                                        inputMode="numeric"
-                                        maxLength={12}
-                                        required={q.required}
-                                        placeholder={
-                                            language === "en"
-                                                ? "Enter 12 digits"
-                                                : "أدخل 12 رقمًا"
-                                        }
-                                        className={`flex-1 p-3 text-base rounded-r ${
-                                            language === "ar"
-                                                ? "text-right"
-                                                : "text-left"
-                                        } ${submitting ? "opacity-50" : ""}`}
-                                        value={formData[q.name] || ""}
-                                        onChange={(e) =>
-                                            setFormData({
-                                                ...formData,
-                                                [q.name]: e.target.value,
-                                            })
-                                        }
-                                        disabled={submitting}
-                                    />
-                                </div>
-                            ) : (
-                                <input
-                                    id={q.name}
-                                    name={q.name}
-                                    type={q.type}
-                                    {...(q.type === "number"
-                                        ? {
-                                              min: "0",
-                                              step: "any",
-                                              pattern: "[0-9]*[.,]?[0-9]*",
-                                              inputMode: "decimal",
-                                              onKeyDown: (e) => {
-                                                  if (
-                                                      [
-                                                          "e",
-                                                          "E",
-                                                          "+",
-                                                          "-",
-                                                      ].includes(e.key) ||
-                                                      (e.key === "." &&
-                                                          (e.currentTarget.value.includes(
-                                                              "."
-                                                          ) ||
-                                                              !e.currentTarget
-                                                                  .value))
-                                                  ) {
-                                                      e.preventDefault();
+                                            ? q.question_en
+                                            : q.question_ar}
+                                        {q.required && (
+                                            <span className="text-red-500">
+                                                {" "}
+                                                *
+                                            </span>
+                                        )}
+                                        {q.name === "sensor_serial_number" && (
+                                            <span
+                                                className="inline-flex items-center cursor-pointer text-gray-500 hover:text-black ml-2"
+                                                onClick={() =>
+                                                    setShowHelpModal(true)
+                                                }
+                                                aria-label="Help"
+                                            >
+                                                <FiHelpCircle className="w-5 h-5" />
+                                            </span>
+                                        )}
+                                    </label>
+
+                                    {q.type === "textarea" ? (
+                                        <div className="relative">
+                                            <textarea
+                                                id={q.name}
+                                                name={q.name}
+                                                rows={4}
+                                                required={q.required}
+                                                placeholder={
+                                                    language === "en"
+                                                        ? "Your answer"
+                                                        : "إجابتك"
+                                                }
+                                                className={`w-full p-3 border rounded bg-white text-base resize-none pr-12 select-none ${
+                                                    language === "ar"
+                                                        ? "text-right"
+                                                        : "text-left"
+                                                } ${
+                                                    submitting
+                                                        ? "opacity-50"
+                                                        : ""
+                                                }`}
+                                                value={formData[q.name] || ""}
+                                                maxLength={500}
+                                                onInput={(e) =>
+                                                    setFormData({
+                                                        ...formData,
+                                                        [q.name]:
+                                                            e.currentTarget
+                                                                .value,
+                                                    })
+                                                }
+                                                onChange={(e) =>
+                                                    setFormData({
+                                                        ...formData,
+                                                        [q.name]:
+                                                            e.target.value,
+                                                    })
+                                                }
+                                                disabled={submitting}
+                                            />
+                                            <span
+                                                className={`absolute bottom-2 text-xs text-gray-400 pointer-events-none select-none ${
+                                                    language === "ar"
+                                                        ? "left-2"
+                                                        : "right-2"
+                                                }`}
+                                            >
+                                                {formData[q.name]?.length || 0}
+                                                /500
+                                            </span>
+                                        </div>
+                                    ) : q.type === "select" && q.options ? (
+                                        <select
+                                            id={q.name}
+                                            name={q.name}
+                                            required={q.required}
+                                            className={`w-full p-3 border rounded bg-white text-base ${
+                                                language === "ar"
+                                                    ? "text-right"
+                                                    : "text-left"
+                                            } ${
+                                                submitting ? "opacity-50" : ""
+                                            }`}
+                                            value={formData[q.name] || ""}
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData,
+                                                    [q.name]: e.target.value,
+                                                })
+                                            }
+                                            disabled={submitting}
+                                        >
+                                            <option value="" disabled hidden>
+                                                {language === "en"
+                                                    ? "Select..."
+                                                    : "اختر"}
+                                            </option>
+                                            {q.options.map((opt, idx) => (
+                                                <option
+                                                    key={idx}
+                                                    value={opt.en}
+                                                >
+                                                    {language === "en"
+                                                        ? opt.en
+                                                        : opt.ar}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : q.type === "date" ? (
+                                        <div className="w-full p-3 border rounded bg-white text-base text-left">
+                                            <DatePicker
+                                                id={q.name}
+                                                selected={
+                                                    formData[q.name]
+                                                        ? new Date(
+                                                              formData[q.name]
+                                                          )
+                                                        : null
+                                                }
+                                                onChange={(date) =>
+                                                    setFormData({
+                                                        ...formData,
+                                                        [q.name]: date
+                                                            ?.toISOString()
+                                                            .split("T")[0],
+                                                    })
+                                                }
+                                                dateFormat="dd/MM/yyyy"
+                                                locale={
+                                                    language === "ar"
+                                                        ? "ar"
+                                                        : "en-GB"
+                                                }
+                                                placeholderText={
+                                                    language === "ar"
+                                                        ? "اختر تاريخًا"
+                                                        : "Select a date"
+                                                }
+                                                disabled={submitting}
+                                                calendarStartDay={0}
+                                                maxDate={new Date()}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                    ) : q.name === "sensor_serial_number" ? (
+                                        <div className="flex items-center border rounded bg-white">
+                                            <span className="px-3 select-none">
+                                                (21)
+                                            </span>
+                                            <input
+                                                id={q.name}
+                                                name={q.name}
+                                                type="text"
+                                                pattern="\d{12}"
+                                                inputMode="numeric"
+                                                maxLength={12}
+                                                required={q.required}
+                                                placeholder={
+                                                    language === "en"
+                                                        ? "Enter 12 digits"
+                                                        : "أدخل 12 رقمًا"
+                                                }
+                                                className={`flex-1 p-3 text-base rounded-r ${
+                                                    language === "ar"
+                                                        ? "text-right"
+                                                        : "text-left"
+                                                } ${
+                                                    submitting
+                                                        ? "opacity-50"
+                                                        : ""
+                                                }`}
+                                                value={formData[q.name] || ""}
+                                                onChange={(e) =>
+                                                    setFormData({
+                                                        ...formData,
+                                                        [q.name]:
+                                                            e.target.value,
+                                                    })
+                                                }
+                                                disabled={submitting}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <input
+                                            id={q.name}
+                                            name={q.name}
+                                            type={q.type}
+                                            {...(q.type === "number"
+                                                ? {
+                                                      min: "0",
+                                                      step: "any",
+                                                      pattern:
+                                                          "[0-9]*[.,]?[0-9]*",
+                                                      inputMode: "decimal",
+                                                      onKeyDown: (e) => {
+                                                          if (
+                                                              [
+                                                                  "e",
+                                                                  "E",
+                                                                  "+",
+                                                                  "-",
+                                                              ].includes(
+                                                                  e.key
+                                                              ) ||
+                                                              (e.key === "." &&
+                                                                  (e.currentTarget.value.includes(
+                                                                      "."
+                                                                  ) ||
+                                                                      !e
+                                                                          .currentTarget
+                                                                          .value))
+                                                          ) {
+                                                              e.preventDefault();
+                                                          }
+                                                      },
                                                   }
-                                              },
-                                          }
-                                        : {})}
-                                    required={q.required}
-                                    placeholder={
-                                        language === "en"
-                                            ? "Your answer"
-                                            : "إجابتك"
-                                    }
-                                    className={`w-full p-3 border rounded bg-white text-base ${
-                                        language === "ar"
-                                            ? "text-right"
-                                            : "text-left"
-                                    } ${submitting ? "opacity-50" : ""}`}
-                                    value={formData[q.name] || ""}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            [q.name]: e.target.value,
-                                        })
-                                    }
-                                    disabled={submitting}
-                                    maxLength={100}
-                                />
-                            )}
-                        </div>
-                    ))}
+                                                : {})}
+                                            required={q.required}
+                                            placeholder={
+                                                language === "en"
+                                                    ? "Your answer"
+                                                    : "إجابتك"
+                                            }
+                                            className={`w-full p-3 border rounded bg-white text-base ${
+                                                language === "ar"
+                                                    ? "text-right"
+                                                    : "text-left"
+                                            } ${
+                                                submitting ? "opacity-50" : ""
+                                            }`}
+                                            value={formData[q.name] || ""}
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData,
+                                                    [q.name]: e.target.value,
+                                                })
+                                            }
+                                            disabled={submitting}
+                                            maxLength={100}
+                                        />
+                                    )}
+                                </div>
+                            );
+                        });
+                    })()}
 
                     <button
                         type="submit"

@@ -72,14 +72,17 @@ button.text-green:hover {
 }
 
 .btn-red {
-    border: 1px solid #fca5a5;
-    color: #dc2626;
+    background-color: rgba(255, 83, 83, 0.8);
+    border: 1px solid #ffcbcb;
+    color: #ffcbcb;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
 .btn-red:hover {
-    background-color: #fef2f2;
+    background-color: #ff0000;
+    color: white;
+    border: 1px solid white;
 }
 
 .btn-black {
