@@ -7,6 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import QRCodeScanner from "@/components/QRCodeScanner";
 import CodeResultOverlay from "@/components/CodeResultOverlay";
 import MainHeader from "@/components/MainHeader";
+import DispenseHistory from "@/components/DispenseHistory";
 
 export default function PharmacyView() {
     const [code, setCode] = useState("");
@@ -18,6 +19,16 @@ export default function PharmacyView() {
         message: string;
     }>(null);
     const [responseId, setResponseId] = useState<string | null>(null);
+    const [showHistory, setShowHistory] = useState(false);
+
+    if (showHistory) {
+        return (
+            <div className="min-h-screen bg-gray-100 text-gray-900 flex flex-col">
+                <MainHeader />
+                <DispenseHistory onClose={() => setShowHistory(false)} />
+            </div>
+        );
+    }
 
     const { language } = useLanguage();
 
@@ -125,7 +136,7 @@ export default function PharmacyView() {
     return (
         <div className="min-h-screen bg-gray-100 text-gray-900 flex flex-col">
             <MainHeader />
-            <main className="flex-grow px-6 py-8 w-full">
+            <main className="px-6 py-8 w-full">
                 <div className="w-full max-w-xl bg-white shadow-lg rounded p-6 mt-10 mx-auto">
                     <h2 className="text-xl font-semibold mb-4 text-center">
                         {language === "ar" ? "أدخل الرمز" : "Enter Code"}
@@ -185,9 +196,7 @@ export default function PharmacyView() {
                                 onClick={() => setShowScanner(true)}
                                 className="mt-6 flex justify-center items-center w-full cursor-pointer"
                             >
-                                <MdQrCodeScanner
-                                    className="text-7xl transition-all duration-200 text-green"
-                                />
+                                <MdQrCodeScanner className="text-7xl transition-all duration-200 text-green" />
                             </button>
 
                             {showScanner && (
@@ -227,6 +236,22 @@ export default function PharmacyView() {
                         />
                     )}
                 </div>
+
+                {/* Transactions Card */}
+                <div className="w-full max-w-xl bg-white shadow-lg rounded p-6 mt-4 mx-auto px-6">
+                    <button
+                        type="button"
+                        onClick={() => setShowHistory(true)}
+                        className="btn-green text-white px-4 py-2 rounded w-full"
+                    >
+                        {language === "ar"
+                            ? "عرض المعاملات السابقة"
+                            : "See Transactions"}
+                    </button>
+                </div>
+                {showHistory && (
+                    <DispenseHistory onClose={() => setShowHistory(false)} />
+                )}
             </main>
         </div>
     );
