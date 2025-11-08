@@ -29,6 +29,7 @@ export default function ResponsesTable() {
     const [selected, setSelected] = useState<ResponseRecord | null>(null);
     const [fromDate, setFromDate] = useState<string>("");
     const [toDate, setToDate] = useState<string>("");
+    const [pharmacyNameByAccount, setPharmacyNameByAccount] = useState<Record<string, string>>({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,10 +61,28 @@ export default function ResponsesTable() {
         fetchData();
     }, [page, supabase, fromDate, toDate]);
 
+    // Fetch all pharmacies once and build a map: pharmacy_account -> pharmacy_name
+    useEffect(() => {
+        const fetchPharmacies = async () => {
+            const { data, error } = await supabase
+                .from("pharmacies")
+                .select("pharmacy_account, pharmacy_name");
+            if (!error && data) {
+                const map: Record<string, string> = {};
+                data.forEach((p: any) => {
+                    if (p.pharmacy_account) map[p.pharmacy_account] = p.pharmacy_name;
+                });
+                setPharmacyNameByAccount(map);
+            }
+        };
+        fetchPharmacies();
+    }, [supabase]);
+
     if (selected) {
         return (
             <ResponseViewModal
                 response={selected}
+                pharmacyNameByAccount={pharmacyNameByAccount}
                 onClose={() => setSelected(null)}
             />
         );
@@ -94,16 +113,32 @@ export default function ResponsesTable() {
             ascending: false,
         });
 
-        // Flatten rows: merge response_data into top level and omit 'id'
-        const flattened = data.map(({ id, response_data, ...rest }) => ({
-          ...rest,
-          ...response_data,
-        }));
-
         if (error || !data) {
             console.error("CSV download error:", error);
             return;
         }
+
+        // Replace user UUIDs with pharmacy names and flatten response_data
+        const flattened = data.map(
+            ({ id, response_data, resolved_by, last_seen_by, resolved_at, last_seen_at, ...rest }) => {
+                const resolvedByName = resolved_at
+                    ? (resolved_by ? pharmacyNameByAccount[resolved_by] || "Deleted account" : "Deleted account")
+                    : "";
+                const lastSeenByName = last_seen_at
+                    ? (last_seen_by ? pharmacyNameByAccount[last_seen_by] || "Deleted account" : "Deleted account")
+                    : "";
+                return {
+                    ...rest,
+                    // Preserve timestamps in CSV
+                    resolved_at,
+                    last_seen_at,
+                    // Replace IDs with readable names in CSV output
+                    resolved_by: resolvedByName,
+                    last_seen_by: lastSeenByName,
+                    ...response_data,
+                };
+            }
+        );
 
         // Convert to CSV and download
         const csv = parse(flattened);

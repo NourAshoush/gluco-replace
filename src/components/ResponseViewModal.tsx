@@ -1,13 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
 import dayjs from "dayjs";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-
 import { MdClose } from "react-icons/md";
 
 export default function ResponseViewModal({
     response,
     onClose,
+    pharmacyNameByAccount,
 }: {
     response: {
         id: number;
@@ -21,32 +19,14 @@ export default function ResponseViewModal({
         last_seen_by: string | null;
     };
     onClose: () => void;
+    pharmacyNameByAccount: Record<string, string>;
 }) {
-    const supabase = createClientComponentClient();
-    const [resolvedByName, setResolvedByName] = useState<string | null>(null);
-    const [lastSeenByName, setLastSeenByName] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchNames = async () => {
-            if (response.resolved_by) {
-                const { data } = await supabase
-                    .from("pharmacies")
-                    .select("pharmacy_name")
-                    .eq("pharmacy_account", response.resolved_by)
-                    .single();
-                setResolvedByName(data?.pharmacy_name || null);
-            }
-            if (response.last_seen_by) {
-                const { data } = await supabase
-                    .from("pharmacies")
-                    .select("pharmacy_name")
-                    .eq("pharmacy_account", response.last_seen_by)
-                    .single();
-                setLastSeenByName(data?.pharmacy_name || null);
-            }
-        };
-        fetchNames();
-    }, [response.resolved_by, response.last_seen_by, supabase]);
+    const resolvedByName = response.resolved_by
+        ? pharmacyNameByAccount[response.resolved_by] || "Deleted account"
+        : null;
+    const lastSeenByName = response.last_seen_by
+        ? pharmacyNameByAccount[response.last_seen_by] || "Deleted account"
+        : null;
 
     return (
         <div className="max-w-4xl mx-auto p-4 relative min-h-[400px]">
@@ -77,10 +57,10 @@ export default function ResponseViewModal({
                         )}
                     </div>
                 )}
-                {response.resolved_by && (
+                {response.resolved_at && (
                     <div>
                         <strong>Resolved By:</strong>{" "}
-                        {resolvedByName || response.resolved_by}
+                        {resolvedByName || "Deleted account"}
                     </div>
                 )}
                 {response.last_seen_at && (
@@ -91,10 +71,10 @@ export default function ResponseViewModal({
                         )}
                     </div>
                 )}
-                {response.last_seen_by && (
+                {response.last_seen_at && (
                     <div>
                         <strong>Last Seen By:</strong>{" "}
-                        {lastSeenByName || response.last_seen_by}
+                        {lastSeenByName || "Deleted account"}
                     </div>
                 )}
             </div>

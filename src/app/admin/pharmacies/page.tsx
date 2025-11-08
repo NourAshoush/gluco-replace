@@ -37,15 +37,26 @@ export default function PharmaciesPage() {
                             {pharmacies.map((pharmacy) => (
                                 <div
                                     key={pharmacy.id}
-                                    className="flex items-center justify-between border border-gray-200 rounded p-4 bg-white shadow-sm"
+                                    className={`flex items-center justify-between border border-gray-200 rounded p-4 shadow-sm ${
+                                        pharmacy.active === false
+                                            ? "bg-gray-50 opacity-40"
+                                            : "bg-white"
+                                    }`}
                                 >
                                     <div className="flex flex-col flex-1">
                                         <div className="text-lg font-semibold text-gray-800">
                                             {pharmacy.pharmacy_name}
                                         </div>
-                                        <div className="text-sm text-gray-500">
-                                            {pharmacy.governorate} •{" "}
-                                            {pharmacy.area}
+                                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                                            <span>
+                                                {pharmacy.governorate} • {" "}
+                                                {pharmacy.area}
+                                            </span>
+                                            {pharmacy.active === false && (
+                                                <span className="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full font-medium">
+                                                    Inactive
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
 
@@ -90,11 +101,17 @@ export default function PharmaciesPage() {
                         pharmacy={selectedPharmacy}
                         onClose={(updated) => {
                             if (updated) {
-                                setPharmacies((prev) =>
-                                    prev.map((p) =>
-                                        p.id === updated.id ? updated : p
-                                    )
-                                );
+                                if ((updated as any).__deleted) {
+                                    setPharmacies((prev) =>
+                                        prev.filter((p) => p.id !== selectedPharmacy.id)
+                                    );
+                                } else {
+                                    setPharmacies((prev) =>
+                                        prev.map((p) =>
+                                            p.id === updated.id ? updated : p
+                                        )
+                                    );
+                                }
                             }
                             setSelectedPharmacy(null);
                         }}

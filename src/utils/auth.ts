@@ -73,5 +73,16 @@ export async function requirePharmacySession() {
         redirect("/unauthorised");
     }
 
+    // Verify the linked pharmacy record is active; otherwise gate access
+    const { data: pharmacy, error: pharmacyError } = await supabase
+        .from("pharmacies")
+        .select("active")
+        .eq("pharmacy_account", session.user.id)
+        .maybeSingle();
+
+    if (pharmacyError || !pharmacy || pharmacy.active !== true) {
+        redirect("/inactive");
+    }
+
     return { session, profile };
 }

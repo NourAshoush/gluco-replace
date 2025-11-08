@@ -27,6 +27,7 @@ export default function PharmaciesPage() {
                 .select(
                     "id, pharmacy_name, governorate, area, open_24_hours, google_maps_link"
                 )
+                .eq("active", true)
                 .order("pharmacy_name", { ascending: true });
             setPharmacies(data || []);
             setLoading(false);

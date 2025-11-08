@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { MdSave, MdClose } from "react-icons/md";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
 
 interface CreatePharmacyModalProps {
     onClose: (newPharmacy?: any) => void;
@@ -10,7 +9,6 @@ interface CreatePharmacyModalProps {
 const CreatePharmacyModal: React.FC<CreatePharmacyModalProps> = ({
     onClose,
 }) => {
-    const router = useRouter();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [pharmacyName, setPharmacyName] = useState("");
@@ -34,58 +32,35 @@ const CreatePharmacyModal: React.FC<CreatePharmacyModalProps> = ({
 
     const handleCreatePharmacy = async () => {
         if (!username || !password) return;
-
         setLoading(true);
-
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-            email: `${username}${EMAIL_SUFFIX}`,
-            password,
-        });
-
-        if (authError || !authData.user) {
-            console.error("Auth error:", authError);
-            setLoading(false);
-            return;
-        }
-
-        // Insert into profiles table
-        const { error: profileError } = await supabase.from("profiles").insert([
-            {
-                id: authData.user.id,
-                role: "pharmacy",
-            },
-        ]);
-
-        if (profileError) {
-            console.error("Profile insert error:", profileError);
-            setLoading(false);
-            return;
-        }
-
-        const { data: pharmacyData, error: pharmacyError } = await supabase
-            .from("pharmacies")
-            .insert([
-                {
+        try {
+            const res = await fetch("/api/admin/create-pharmacy", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: `${username}${EMAIL_SUFFIX}`,
+                    password,
                     pharmacy_name: pharmacyName,
                     governorate,
                     area,
                     open_24_hours: open24Hours,
                     google_maps_link: googleMapsLink,
                     address,
-                    pharmacy_account: authData.user.id,
-                },
-            ])
-            .select();
-
-        if (pharmacyError) {
-            console.error("Pharmacy insert error:", pharmacyError);
+                }),
+            });
+            if (!res.ok) {
+                const body = await res.json().catch(() => ({}));
+                console.error("Create pharmacy failed:", body?.error || res.statusText);
+                setLoading(false);
+                return;
+            }
+            const { pharmacy } = await res.json();
             setLoading(false);
-            return;
+            onClose(pharmacy);
+        } catch (e) {
+            console.error(e);
+            setLoading(false);
         }
-
-        setLoading(false);
-        await supabase.auth.signOut();
-        router.push("/login");
     };
 
     return (
@@ -184,16 +159,32 @@ const CreatePharmacyModal: React.FC<CreatePharmacyModalProps> = ({
                     />
                 </div>
 
-                <div className="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        id="open24Hours"
-                        checked={open24Hours}
-                        onChange={(e) => setOpen24Hours(e.target.checked)}
-                    />
-                    <label htmlFor="open24Hours" className="font-medium">
-                        Open 24 Hours
-                    </label>
+                <div>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <div className="font-medium">Open 24 Hours</div>
+                            <p className="text-xs text-gray-500">
+                                Toggle the 24-hour badge for this pharmacy.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={open24Hours}
+                            onClick={() => setOpen24Hours((v) => !v)}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                                open24Hours
+                                    ? "bg-green-500 focus:ring-green-500"
+                                    : "bg-gray-300 focus:ring-gray-400"
+                            }`}
+                        >
+                            <span
+                                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                                    open24Hours ? "translate-x-5" : "translate-x-1"
+                                }`}
+                            />
+                        </button>
+                    </div>
                 </div>
 
                 <div>
