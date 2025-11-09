@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function PharmacyDetailsModal({
     pharmacy,
@@ -18,6 +19,7 @@ export default function PharmacyDetailsModal({
     };
     onClose: () => void;
 }) {
+    const { language } = useLanguage();
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             if (e.key === "Escape") onClose();
@@ -33,7 +35,7 @@ export default function PharmacyDetailsModal({
                 onClick={onClose}
             />
 
-            <div className="relative z-10 w-full max-w-xl bg-white rounded-xl shadow-xl overflow-hidden">
+            <div className={`relative z-10 w-full max-w-xl bg-white rounded-xl shadow-xl overflow-hidden ${language === "ar" ? "text-right" : "text-left"}`}>
                 <div className="flex items-start justify-between p-5 border-b border-gray-200">
                     <div className="space-y-1">
                         <h2 className="text-xl font-bold text-gray-900">
@@ -44,7 +46,7 @@ export default function PharmacyDetailsModal({
                         </div>
                         {pharmacy.open_24_hours && (
                             <span className="inline-block text-xs bg-green bg-opacity-20 text-white px-2 py-1 rounded-full font-medium mt-1">
-                                Open 24 Hours
+                                {language === "ar" ? "مفتوح 24 ساعة" : "Open 24 Hours"}
                             </span>
                         )}
                     </div>
@@ -53,7 +55,7 @@ export default function PharmacyDetailsModal({
                         className="text-gray-600 hover:text-gray-800 cursor-pointer"
                         aria-label="Close"
                     >
-                        ✕
+                        {language === "ar" ? "إغلاق" : "Close"}
                     </button>
                 </div>
 
@@ -61,7 +63,7 @@ export default function PharmacyDetailsModal({
                     {(pharmacy.latitude != null && pharmacy.longitude != null) && (
                         <div>
                             <div className="text-xs uppercase tracking-wide text-gray-500 mb-2">
-                                Location Map
+                                {language === "ar" ? "الخريطة" : "Location Map"}
                             </div>
                             <div className="w-full overflow-hidden rounded-lg border border-gray-200">
                                 <iframe
@@ -78,7 +80,7 @@ export default function PharmacyDetailsModal({
                     {pharmacy.address && (
                         <div>
                             <div className="text-xs uppercase tracking-wide text-gray-500">
-                                Address
+                                {language === "ar" ? "العنوان" : "Address"}
                             </div>
                             <div className="text-gray-800 mt-1 whitespace-pre-wrap">
                                 {pharmacy.address}
@@ -94,17 +96,16 @@ export default function PharmacyDetailsModal({
                         rel="noopener noreferrer"
                         className="btn-black px-4 py-2 text-sm rounded"
                     >
-                        Open in Google Maps
+                        {language === "ar" ? "فتح في خرائط جوجل" : "Open in Google Maps"}
                     </a>
                     <button
                         onClick={onClose}
                         className="px-4 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
                     >
-                        Close
+                        {language === "ar" ? "إغلاق" : "Close"}
                     </button>
                 </div>
             </div>
         </div>
     );
 }
-

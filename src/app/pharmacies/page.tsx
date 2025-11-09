@@ -5,6 +5,7 @@ import { FaSpinner } from "react-icons/fa";
 import MainHeader from "@/components/MainHeader";
 import Footer from "@/components/Footer";
 import PharmacyDetailsModal from "@/components/PharmacyDetailsModal";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Pharmacy {
     id: number;
@@ -24,6 +25,7 @@ export default function PharmaciesPage() {
     const [loading, setLoading] = useState(true);
     const [selected, setSelected] = useState<Pharmacy | null>(null);
     const [userLoc, setUserLoc] = useState<{ lat: number; lng: number } | null>(null);
+    const { language } = useLanguage();
 
     useEffect(() => {
         async function fetchPharmacies() {
@@ -56,11 +58,11 @@ export default function PharmaciesPage() {
         <div className="flex flex-col min-h-screen bg-white">
             <div className="flex-grow">
                 <MainHeader />
-                <div className="max-w-6xl mx-auto p-6 space-y-4">
+                <div className={`max-w-6xl mx-auto p-6 space-y-4 ${language === "ar" ? "text-right" : "text-left"}`}>
                 <h1 className="text-2xl font-bold text-green">
-                    Nearest Pharmacies
+                    {language === "ar" ? "أقرب الصيدليات" : "Nearest Pharmacies"}
                 </h1>
-                <div className="flex items-center gap-3">
+                <div className={`flex items-center gap-3 ${language === "ar" ? "justify-end" : ""}`}>
                     <button
                         className="px-4 py-2 text-sm rounded border border-gray-300 hover:bg-gray-50 cursor-pointer"
                         onClick={() => {
@@ -76,10 +78,10 @@ export default function PharmaciesPage() {
                             );
                         }}
                     >
-                        Use My Location
+                        {language === "ar" ? "استخدم موقعي" : "Use My Location"}
                     </button>
                     {userLoc && (
-                        <span className="text-xs text-gray-500">Location set</span>
+                        <span className="text-xs text-gray-500">{language === "ar" ? "تم تحديد الموقع" : "Location set"}</span>
                     )}
                 </div>
                 
@@ -104,6 +106,8 @@ export default function PharmaciesPage() {
                             const distKm = userLoc && pharmacy.latitude != null && pharmacy.longitude != null
                                 ? haversineKm(userLoc, { lat: pharmacy.latitude, lng: pharmacy.longitude })
                                 : null;
+                            const formatNumber = (n: number) =>
+                                language === "ar" ? n.toLocaleString("ar") : n.toLocaleString();
                             return (
                                 <button
                                     key={pharmacy.id}
@@ -122,15 +126,17 @@ export default function PharmaciesPage() {
                                         <div className="flex items-center gap-3">
                                             {distKm != null && (
                                                 <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full font-medium">
-                                                    {distKm < 1 ? `${(distKm * 1000).toFixed(0)} m` : `${distKm.toFixed(1)} km`}
+                                                    {distKm < 1
+                                                        ? `${formatNumber(parseFloat((distKm * 1000).toFixed(0)))} ${language === "ar" ? "م" : "m"}`
+                                                        : `${formatNumber(parseFloat(distKm.toFixed(1)))} ${language === "ar" ? "كم" : "km"}`}
                                                 </span>
                                             )}
                                             {pharmacy.open_24_hours && (
                                                 <span className="text-xs bg-green bg-opacity-20 text-white px-2 py-1 rounded-full font-medium">
-                                                    Open 24 Hours
+                                                    {language === "ar" ? "مفتوح 24 ساعة" : "Open 24 Hours"}
                                                 </span>
                                             )}
-                                            <span className="text-sm text-green underline">View details</span>
+                                            <span className="text-sm text-green underline">{language === "ar" ? "عرض التفاصيل" : "View details"}</span>
                                         </div>
                                     </div>
                                 </button>
