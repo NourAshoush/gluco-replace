@@ -86,6 +86,34 @@ export async function POST(request: Request) {
             );
         }
 
+        // Try to extract latitude/longitude from Google Maps link (handles @lat,lng, ?q=lat,lng, and !3dlat!4dlng)
+        function parseLatLngFromGoogleUrl(url: string): { lat: number; lng: number } | null {
+            try {
+                const q = url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+                if (q) return { lat: parseFloat(q[1]), lng: parseFloat(q[2]) };
+                const at = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+                if (at) return { lat: parseFloat(at[1]), lng: parseFloat(at[2]) };
+                const deep = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+                if (deep) return { lat: parseFloat(deep[1]), lng: parseFloat(deep[2]) };
+                return null;
+            } catch {
+                return null;
+            }
+        }
+
+        // Expand short links like maps.app.goo.gl by following redirects (best-effort)
+        let finalMapUrl = google_maps_link as string;
+        try {
+            if (/maps\.app\.goo\.gl|goo\.gl\//i.test(finalMapUrl)) {
+                const resp = await fetch(finalMapUrl, { redirect: "follow" });
+                if (resp?.url) finalMapUrl = resp.url;
+            }
+        } catch {
+            // ignore expansion errors; fall back to original URL
+        }
+
+        const coords = parseLatLngFromGoogleUrl(finalMapUrl);
+
         // Insert pharmacy
         const { data: pharmacyRows, error: pharmacyInsertError } = await supabaseAdmin
             .from("pharmacies")
@@ -96,6 +124,8 @@ export async function POST(request: Request) {
                     area,
                     open_24_hours: !!open_24_hours,
                     google_maps_link,
+                    latitude: coords?.lat ?? null,
+                    longitude: coords?.lng ?? null,
                     address: address ?? "",
                     pharmacy_account: newUserId,
                     active: true,
@@ -120,4 +150,3 @@ export async function POST(request: Request) {
         );
     }
 }
-
