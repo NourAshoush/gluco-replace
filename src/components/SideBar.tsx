@@ -55,13 +55,13 @@ export default function SideBar() {
 
             {/* Mobile dropdown menu */}
             {open && (
-                <div className="md:hidden fixed top-16 right-4 w-56 bg-white rounded-md shadow-lg z-50">
-                    <div className="flex flex-col divide-y divide-gray-200">
+                <div className="md:hidden fixed top-16 right-4 w-56 bg-white rounded-xl shadow-lg z-50 p-2">
+                    <div className="flex flex-col gap-2">
                         {links.map(({ href, label, icon }) => (
                             <Link
                                 key={href}
                                 href={href}
-                                className={`flex items-center gap-3 px-4 py-3 transition duration-200 ease-in-out ${
+                                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition duration-200 ease-in-out ${
                                     pathname === href
                                         ? "bg-green-100 text-green font-semibold hover:bg-green-200"
                                         : "text-black hover:bg-gray-100"
@@ -82,7 +82,7 @@ export default function SideBar() {
             )}
 
             {/* Sidebar (desktop only) */}
-            <div className="hidden md:block fixed top-0 left-0 h-screen w-64 bg-white text-black p-4 z-50 border-r border-gray-200 rounded-tr-xl rounded-br-xl shadow-md">
+            <div className="hidden md:block fixed top-0 left-0 h-screen w-64 bg-white text-black p-4 z-50 border-r border-gray-200 rounded-tr-2xl rounded-br-2xl shadow-md">
                 <div className="flex flex-col justify-center items-center h-full space-y-4">
                     <div className="mb-6">
                         <Image
@@ -98,7 +98,7 @@ export default function SideBar() {
                         <Link
                             key={href}
                             href={href}
-                            className={`w-full flex items-center justify-start text-left gap-3 px-4 py-3 rounded transition duration-200 ease-in-out ${
+                            className={`w-full flex items-center justify-start text-left gap-3 px-4 py-3 rounded-lg transition duration-200 ease-in-out ${
                                 pathname === href
                                     ? "bg-green-100 text-green font-semibold hover:bg-green-200"
                                     : "text-black hover:bg-gray-100"

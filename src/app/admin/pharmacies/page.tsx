@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { FaSpinner } from "react-icons/fa";
+import { MdAdd } from "react-icons/md";
 import EditPharmacyModal from "@/components/EditPharmacyModal";
 import CreatePharmacyModal from "@/components/CreatePharmacyModal";
 
@@ -25,19 +26,43 @@ export default function PharmaciesPage() {
         <div className="max-w-4xl mx-auto p-4 relative min-h-[400px]">
             {!selectedPharmacy && !creatingPharmacy && (
                 <div>
-                    <h1 className="text-2xl font-bold mb-6 text-green">
-                        Pharmacies
-                    </h1>
+                    <div className="flex items-center justify-between mb-6">
+                        <h1 className="text-2xl font-bold text-green">Pharmacies</h1>
+                        <button
+                            className="btn-green px-4 py-2 text-sm rounded flex items-center gap-2"
+                            onClick={() => setCreatingPharmacy(true)}
+                        >
+                            <MdAdd size={18} /> Create Pharmacy
+                        </button>
+                    </div>
                     {loading ? (
                         <div className="flex justify-center py-20">
                             <FaSpinner className="animate-spin text-green text-3xl" />
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {pharmacies.map((pharmacy) => (
+                            {[...pharmacies]
+                                .sort((a, b) => {
+                                    const aInactive = a.active === false;
+                                    const bInactive = b.active === false;
+                                    if (aInactive !== bInactive) return aInactive ? 1 : -1;
+                                    return String(a.pharmacy_name || "").localeCompare(
+                                        String(b.pharmacy_name || "")
+                                    );
+                                })
+                                .map((pharmacy) => (
                                 <div
                                     key={pharmacy.id}
-                                    className={`flex items-center justify-between border border-gray-200 rounded p-4 shadow-sm ${
+                                    onClick={() => setSelectedPharmacy(pharmacy)}
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter" || e.key === " ") {
+                                            e.preventDefault();
+                                            setSelectedPharmacy(pharmacy);
+                                        }
+                                    }}
+                                    className={`cursor-pointer transition transform hover:-translate-y-0.5 hover:shadow-md hover:border-green flex items-center justify-between border border-gray-200 rounded p-4 shadow-sm ${
                                         pharmacy.active === false
                                             ? "bg-gray-50 opacity-40"
                                             : "bg-white"
@@ -66,31 +91,23 @@ export default function PharmaciesPage() {
                                                 24 Hours
                                             </span>
                                         )}
-                                        <button
-                                            className="p-2 rounded-full hover:bg-gray-200 transition cursor-pointer"
-                                            title="Edit Pharmacy"
-                                            onClick={() =>
-                                                setSelectedPharmacy(pharmacy)
-                                            }
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-5 w-5 text-gray-600"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
                                         >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-5 w-5 text-gray-600"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="2"
-                                                    d="M9 5l7 7-7 7"
-                                                />
-                                            </svg>
-                                        </button>
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M9 5l7 7-7 7"
+                                            />
+                                        </svg>
                                     </div>
                                 </div>
-                            ))}
+                                ))}
                         </div>
                     )}
                 </div>
@@ -130,14 +147,7 @@ export default function PharmaciesPage() {
                     />
                 </div>
             )}
-            <div className="flex mb-4 pt-6 gap-4">
-                <button
-                    className="btn-green px-4 py-2 text-sm rounded"
-                    onClick={() => setCreatingPharmacy(true)}
-                >
-                    Create Pharmacy
-                </button>
-            </div>
+            
         </div>
     );
 }

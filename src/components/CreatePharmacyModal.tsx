@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MdSave, MdClose } from "react-icons/md";
+import { MdSave } from "react-icons/md";
 import { createClient } from "@/utils/supabase/client";
 
 interface CreatePharmacyModalProps {
@@ -70,36 +70,34 @@ const CreatePharmacyModal: React.FC<CreatePharmacyModalProps> = ({
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green"></div>
                 </div>
             )}
-            <h2 className="text-2xl font-bold mb-4 text-green">
-                Create Pharmacy
-            </h2>
+            <h2 className="text-2xl font-bold mb-4 text-green">Create Pharmacy</h2>
             <div className="space-y-4">
                 <h3 className="text-gray-600 font-semibold text-lg mb-2">
                     Account Details
                 </h3>
                 <div>
-                    <label className="block font-medium" htmlFor="username">
-                        Username
+                    <label className="block text-xs uppercase tracking-wide text-gray-500" htmlFor="username">
+                        Username <span className="text-red-600">*</span>
                     </label>
                     <input
                         type="text"
                         id="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="w-full mt-1 p-2 border border-gray-300 rounded"
+                        className="w-full mt-1 p-3 border border-gray-300 rounded"
                     />
                 </div>
 
                 <div>
-                    <label className="block font-medium" htmlFor="password">
-                        Password
+                    <label className="block text-xs uppercase tracking-wide text-gray-500" htmlFor="password">
+                        Password <span className="text-red-600">*</span>
                     </label>
                     <input
-                        type="text"
+                        type="password"
                         id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full mt-1 p-2 border border-gray-300 rounded"
+                        className="w-full mt-1 p-3 border border-gray-300 rounded"
                     />
                     {password && password.length < 6 && (
                         <span className="text-sm text-red-500">
@@ -112,27 +110,27 @@ const CreatePharmacyModal: React.FC<CreatePharmacyModalProps> = ({
                     Pharmacy Details
                 </h3>
                 <div>
-                    <label className="block font-medium" htmlFor="pharmacyName">
-                        Pharmacy Name
+                    <label className="block text-xs uppercase tracking-wide text-gray-500" htmlFor="pharmacyName">
+                        Pharmacy Name <span className="text-red-600">*</span>
                     </label>
                     <input
                         type="text"
                         id="pharmacyName"
                         value={pharmacyName}
                         onChange={(e) => setPharmacyName(e.target.value)}
-                        className="w-full mt-1 p-2 border border-gray-300 rounded"
+                        className="w-full mt-1 p-3 border border-gray-300 rounded"
                     />
                 </div>
 
                 <div>
-                    <label className="block font-medium" htmlFor="governorate">
-                        Governorate
+                    <label className="block text-xs uppercase tracking-wide text-gray-500" htmlFor="governorate">
+                        Governorate <span className="text-red-600">*</span>
                     </label>
                     <select
                         id="governorate"
                         value={governorate}
                         onChange={(e) => setGovernorate(e.target.value)}
-                        className="w-full mt-1 p-2 border border-gray-300 rounded"
+                        className="w-full mt-1 p-3 border border-gray-300 rounded"
                     >
                         <option value="">Select Governorate</option>
                         <option value="Al Asimah">Al Asimah</option>
@@ -147,15 +145,15 @@ const CreatePharmacyModal: React.FC<CreatePharmacyModalProps> = ({
                 </div>
 
                 <div>
-                    <label className="block font-medium" htmlFor="area">
-                        Area
+                    <label className="block text-xs uppercase tracking-wide text-gray-500" htmlFor="area">
+                        Area <span className="text-red-600">*</span>
                     </label>
                     <input
                         type="text"
                         id="area"
                         value={area}
                         onChange={(e) => setArea(e.target.value)}
-                        className="w-full mt-1 p-2 border border-gray-300 rounded"
+                        className="w-full mt-1 p-3 border border-gray-300 rounded"
                     />
                 </div>
 
@@ -188,31 +186,28 @@ const CreatePharmacyModal: React.FC<CreatePharmacyModalProps> = ({
                 </div>
 
                 <div>
-                    <label
-                        className="block font-medium"
-                        htmlFor="googleMapsLink"
-                    >
-                        Google Maps Link
+                    <label className="block text-xs uppercase tracking-wide text-gray-500" htmlFor="googleMapsLink">
+                        Google Maps Link <span className="text-red-600">*</span>
                     </label>
                     <input
                         type="text"
                         id="googleMapsLink"
                         value={googleMapsLink}
                         onChange={(e) => setGoogleMapsLink(e.target.value)}
-                        className="w-full mt-1 p-2 border border-gray-300 rounded"
+                        className="w-full mt-1 p-3 border border-gray-300 rounded"
                     />
                 </div>
 
                 <div>
-                    <label className="block font-medium" htmlFor="address">
+                    <label className="block text-xs uppercase tracking-wide text-gray-500" htmlFor="address">
                         Address
                     </label>
                     <textarea
                         id="address"
-                        rows={2}
+                        rows={3}
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
-                        className="w-full mt-1 p-2 border border-gray-300 rounded resize-none"
+                        className="w-full mt-1 p-3 border border-gray-300 rounded resize-none"
                     />
                 </div>
             </div>
@@ -229,14 +224,13 @@ const CreatePharmacyModal: React.FC<CreatePharmacyModalProps> = ({
                     }}
                 >
                     <MdSave />
-                    Save
+                    Create
                 </button>
                 <button
                     type="button"
-                    className="btn-black px-4 py-2 text-sm rounded flex items-center gap-2"
+                    className="btn-black px-4 py-2 text-sm rounded"
                     onClick={() => onClose()}
                 >
-                    <MdClose />
                     Cancel
                 </button>
             </div>

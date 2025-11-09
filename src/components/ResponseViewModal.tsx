@@ -1,6 +1,6 @@
 "use client";
+import { useEffect } from "react";
 import dayjs from "dayjs";
-import { MdClose } from "react-icons/md";
 
 export default function ResponseViewModal({
     response,
@@ -28,71 +28,101 @@ export default function ResponseViewModal({
         ? pharmacyNameByAccount[response.last_seen_by] || "Deleted account"
         : null;
 
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") onClose();
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [onClose]);
+
     return (
-        <div className="max-w-4xl mx-auto p-4 relative min-h-[400px]">
-            <button
-                onClick={onClose}
-                className="absolute top-4 right-4 text-gray-600 cursor-pointer hover:text-gray-800"
-            >
-                <MdClose size={24} />
-            </button>
-            <h2 className="text-2xl font-bold mb-4">Response Details</h2>
-            <div className="space-y-2 text-sm text-gray-700 mb-4">
-                <div>
-                    <strong>Submitted:</strong>{" "}
-                    {dayjs(response.submitted_at).format("DD MMM YYYY, HH:mm")}
+        <div className="w-full max-w-6xl mx-auto p-8 relative min-h-[500px]">
+            {/* Title bar */}
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                    <span
+                        className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold ${
+                            response.resolved
+                                ? "bg-green bg-opacity-20 text-white"
+                                : "bg-red-600/10 text-red-700"
+                        }`}
+                    >
+                        {response.resolved ? "Completed" : "Pending"}
+                    </span>
+                    <div className="text-lg font-semibold text-gray-900">
+                        {dayjs(response.submitted_at).format("DD MMM YYYY, HH:mm")}
+                    </div>
                 </div>
-                <div>
-                    <strong>Code:</strong> {response.code}
-                </div>
-                <div>
-                    <strong>Resolved:</strong>{" "}
-                    {response.resolved ? "Yes" : "No"}
-                </div>
-                {response.resolved_at && (
-                    <div>
-                        <strong>Resolved At:</strong>{" "}
-                        {dayjs(response.resolved_at).format(
-                            "DD MMM YYYY, HH:mm"
-                        )}
-                    </div>
-                )}
-                {response.resolved_at && (
-                    <div>
-                        <strong>Resolved By:</strong>{" "}
-                        {resolvedByName || "Deleted account"}
-                    </div>
-                )}
-                {response.last_seen_at && (
-                    <div>
-                        <strong>Last Seen:</strong>{" "}
-                        {dayjs(response.last_seen_at).format(
-                            "DD MMM YYYY, HH:mm"
-                        )}
-                    </div>
-                )}
-                {response.last_seen_at && (
-                    <div>
-                        <strong>Last Seen By:</strong>{" "}
-                        {lastSeenByName || "Deleted account"}
-                    </div>
-                )}
+                <button
+                    onClick={onClose}
+                    className="btn-black px-4 py-2 text-sm rounded"
+                    aria-label="Close"
+                >
+                    Close
+                </button>
             </div>
-            <h3 className="text-lg font-semibold mb-2">Form Data</h3>
-            <div className="max-h-64 overflow-y-auto border rounded bg-green-50 p-4">
-                {Object.entries(response.response_data).map(
-                    ([field, value]) => (
-                        <div key={field} className="py-2">
-                            <div className="text-gray-700 font-medium">
-                                {field
-                                    .replace(/_/g, " ")
-                                    .replace(/\b\w/g, (c) => c.toUpperCase())}
+
+            {/* Summary */}
+            <div className="flex items-start justify-between mb-6">
+                <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                        <span className="text-base text-gray-700">Code:</span>
+                        <span className="font-mono text-base bg-gray-100 rounded px-3 py-1">
+                            {response.code}
+                        </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-sm">
+                        {response.last_seen_at && (
+                            <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700">
+                                Last Seen By: {lastSeenByName || "Deleted account"}
+                            </span>
+                        )}
+                        {response.resolved_at && (
+                            <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700">
+                                Resolved By: {resolvedByName || "Deleted account"}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Timeline row */}
+            <div className="text-sm text-gray-800 mb-6 flex items-center gap-4 bg-gray-100 rounded-md px-5 py-3 border border-gray-200">
+                <div>
+                    <span className="font-medium">Submitted</span> {dayjs(response.submitted_at).format("DD MMM YYYY, HH:mm")}
+                </div>
+                <span className="text-gray-500">→</span>
+                <div>
+                    <span className="font-medium">Resolved</span> {response.resolved_at ? dayjs(response.resolved_at).format("DD MMM YYYY, HH:mm") : "—"}
+                </div>
+                <span className="text-gray-500">→</span>
+                <div>
+                    <span className="font-medium">Last Seen</span> {response.last_seen_at ? dayjs(response.last_seen_at).format("DD MMM YYYY, HH:mm") : "—"}
+                </div>
+            </div>
+
+            {/* Form data grid */}
+            <h3 className="text-xl font-semibold mb-3 text-green">Form Data</h3>
+            <div className="max-h-[60vh] overflow-y-auto border rounded-lg">
+                <div className="grid grid-cols-1 sm:grid-cols-2">
+                    {Object.entries(response.response_data).map(([field, value], idx) => (
+                        <div
+                            key={field}
+                            className={`p-4 ${idx % 2 === 0 ? "bg-green-50" : "bg-white"}`}
+                        >
+                            <div className="text-sm uppercase tracking-wide text-gray-500">
+                                {field.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                             </div>
-                            <div className="text-gray-800">{String(value)}</div>
+                            <div className="mt-2 text-gray-800 whitespace-pre-wrap break-words text-base">
+                                {String(value)}
+                            </div>
                         </div>
-                    )
-                )}
+                    ))}
+                </div>
             </div>
+
+            {/* Footer intentionally removed (close in title bar) */}
         </div>
     );
 }

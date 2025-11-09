@@ -18,7 +18,6 @@ export default function PharmaciesPage() {
     const supabase = createClientComponentClient();
     const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filterGov, setFilterGov] = useState<string>("All");
 
     useEffect(() => {
         async function fetchPharmacies() {
@@ -45,67 +44,41 @@ export default function PharmaciesPage() {
                 <h1 className="text-2xl font-bold text-green">
                     Nearest Pharmacies
                 </h1>
-                {/* Governorate Filter */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                        Filter by Governorate
-                    </label>
-                    <select
-                        value={filterGov}
-                        onChange={(e) => setFilterGov(e.target.value)}
-                        className="mt-1 border border-gray-300 rounded p-2"
-                    >
-                        <option>All</option>
-                        <option>Capital (Al Asimah)</option>
-                        <option>Hawalli</option>
-                        <option>Farwaniya</option>
-                        <option>Jahra</option>
-                        <option>Ahmadi</option>
-                        <option>Mubarak Al-Kabeer</option>
-                    </select>
-                </div>
+                
                 {loading ? (
                     <div className="flex justify-center items-center py-20">
                         <FaSpinner className="animate-spin text-green text-4xl" />
                     </div>
                 ) : (
-                    pharmacies
-                        .filter(
-                            (p) =>
-                                filterGov === "All" || p.governorate === filterGov
-                        )
-                        .map((pharmacy) => (
-                            <div
-                                key={pharmacy.id}
-                                className="p-4 border border-gray-200 rounded shadow-sm flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white"
-                            >
+                    pharmacies.map((pharmacy) => (
+                        <a
+                            key={pharmacy.id}
+                            href={pharmacy.google_maps_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`View ${pharmacy.pharmacy_name} on Google Maps`}
+                            className="block p-4 border border-gray-200 rounded shadow-sm bg-white transition hover:shadow-md hover:border-green focus:ring-2 focus:ring-green focus:outline-none"
+                        >
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                                 <div className="flex-1">
                                     <div className="text-lg font-semibold text-gray-800">
                                         {pharmacy.pharmacy_name}
                                     </div>
                                     <div className="text-sm text-gray-600">
-                                        {pharmacy.governorate} &bull;{" "}
-                                        {pharmacy.area}
+                                        {pharmacy.governorate} &bull; {pharmacy.area}
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3 mt-3 sm:mt-0">
+                                <div className="flex items-center gap-3">
                                     {pharmacy.open_24_hours && (
                                         <span className="text-xs bg-green bg-opacity-20 text-white px-2 py-1 rounded-full font-medium">
                                             Open 24 Hours
                                         </span>
                                     )}
-                                    <a
-                                        href={pharmacy.google_maps_link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="btn-black px-3 py-1 text-sm rounded"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        View on Map
-                                    </a>
+                                    <span className="text-sm text-green underline">Open in Maps ↗</span>
                                 </div>
                             </div>
-                        ))
+                        </a>
+                    ))
                 )}
             </div>
 
